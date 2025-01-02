@@ -425,56 +425,60 @@ public class Physics {
     }
 	
     private void updateVelocityRK4() {
-		particlesBuffer = particles
-		vector3d[] k1;
-		vector3d[] k2;
-		vector3d[] k3;
-		vector3d[] k4;
-		
-		loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
+        particlesBuffer = particles
+        vector3d[] k1;
+        vector3d[] k2;
+        vector3d[] k3;
+        vector3d[] k4;
+
+        // Maybe do getContainers() here?
+        loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
             if (!updateThreadsShouldRun.get()) return false;
-			k1[i] = accel(i, particlesBuffer[i].position)
+            k1[i] = accel(i, particlesBuffer[i].position)
             return true;
         });
-		
-		loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
+        
+        // Maybe do getContainers() here?
+        loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
             if (!updateThreadsShouldRun.get()) return false;
-			double dt = settings.dt * 0.5
-			Particle p = particlesBuffer[i]
-			p.position = p.position.add(p.velocity.mul(dt)).add(k3[i].mul(0.5).mul(dt*dt))
-			k2[i] = accel(i, p.position)
+            double dt = settings.dt * 0.5
+            Particle p = particlesBuffer[i]
+            p.position = p.position.add(p.velocity.mul(dt)).add(k3[i].mul(0.5).mul(dt*dt))
+            k2[i] = accel(i, p.position)
             return true;
         });
-		
-		loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
+        
+        // Maybe do getContainers() here?
+        loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
             if (!updateThreadsShouldRun.get()) return false;
-			double dt = settings.dt * 0.5
-			Particle p = particlesBuffer[i]
-			p.position = p.position.add(p.velocity.mul(dt)).add(k3[i].mul(0.5).mul(dt*dt))
-			k3[i] = accel(i, p.position)
+            double dt = settings.dt * 0.5
+            Particle p = particlesBuffer[i]
+            p.position = p.position.add(p.velocity.mul(dt)).add(k3[i].mul(0.5).mul(dt*dt))
+            k3[i] = accel(i, p.position)
             return true;
         });
-		
-		loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
+        
+        // Maybe do getContainers() here?
+        loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
             if (!updateThreadsShouldRun.get()) return false;
-			double dt = settings.dt
-			Particle p = particlesBuffer[i]
-			p.position = p.position.add(p.velocity.mul(dt)).add(k3[i].mul(0.5).mul(dt*dt))
-			k4[i] = accel(i, p.position)
+            double dt = settings.dt
+            Particle p = particlesBuffer[i]
+            p.position = p.position.add(p.velocity.mul(dt)).add(k3[i].mul(0.5).mul(dt*dt))
+            k4[i] = accel(i, p.position)
             return true;
         });
-		
-		loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
+        
+        loadDistributor.distributeLoadEvenly(particles.length, preferredNumberOfThreads, i -> {
             if (!updateThreadsShouldRun.get()) return false;
-			Particle p = particles[i]
-			p.velocity.add(a1
+            double dt = settings.dt
+            Particle p = particles[i]
+            p.velocity.add(a1
                 .add(a2.mul(2))
                 .add(a3.mul(2))
                 .add(a4)
                 .mul(dt / 6));
             return true;
         });
-		
 
     private Vector3d accel(int i, Vector3d position) {
         Particle p = particles[i];
